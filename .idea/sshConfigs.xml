@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SshConfigs">
+    <configs>
+      <sshConfig authType="PASSWORD" connectionConfig="{&quot;serverAliveInterval&quot;:300}" host="106.3.133.5" id="45458426-dfd3-4e3f-a57b-3a3a3b3c4928" port="60708" customName="BJ-DB" nameFormat="CUSTOM" username="root">
+        <option name="customName" value="BJ-DB" />
+      </sshConfig>
+      <sshConfig authType="PASSWORD" connectionConfig="{&quot;serverAliveInterval&quot;:300}" host="119.3.66.99" id="9e780002-890a-44e0-8fbc-4ba0b073049e" port="22" customName="上海2-1" nameFormat="CUSTOM" username="root">
+        <option name="customName" value="上海2-1" />
+      </sshConfig>
+      <sshConfig authType="PASSWORD" connectionConfig="{&quot;serverAliveInterval&quot;:300}" host="106.3.133.6" id="812286fb-6b2f-4663-b35d-0c08e552ed8b" port="60708" customName="BJ-OVS" nameFormat="CUSTOM" username="root">
+        <option name="customName" value="BJ-OVS" />
+      </sshConfig>
+      <sshConfig authType="PASSWORD" connectionConfig="{&quot;serverAliveInterval&quot;:300}" host="103.228.162.75" id="6df6be7d-6337-4989-99b0-7a0c9434a341" port="22" customName="GZOVS" nameFormat="CUSTOM" username="root">
+        <option name="customName" value="GZOVS" />
+      </sshConfig>
+      <sshConfig authType="PASSWORD" host="103.228.162.74" id="dcf9c8a4-cbec-4cb2-bafc-08422e0f34f2" port="22" nameFormat="DESCRIPTIVE" username="root" />
+    </configs>
+  </component>
+</project>

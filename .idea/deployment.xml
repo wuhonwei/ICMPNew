@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" autoUpload="Always" serverName="GZ-PMA" remoteFilesAllowedToDisappearOnAutoupload="false">
+    <serverData>
+      <paths name="BJ-DB">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/ZM_test/ICMPSimply" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="BJ-OVS">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/ZM_test_plugin/ICMP" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="GZ-PMA">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/root/oldwu/ICMPSimply_n9e版/ICMPSimply" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="GZOVS">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/sxs_test/ICMPSimply" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="上海2-1">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/ZM_test/ICMPSimply" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
+  </component>
+</project>

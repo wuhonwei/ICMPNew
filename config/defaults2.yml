@@ -1,0 +1,20 @@
+settings:
+  hostname: ''
+  RTCPP: 12580
+  RUDPP: 12581
+  isContinuity: false
+  mixture: true
+  step: 600
+  dataSizeMB: 100
+  mysqlAddress: 0HpNlDeO70YTFJxYX7k5qlPpYgtsR1o/25F4MmoLTOw=
+  mysqlPassWord: F5BM56YG+SoN4wm0Wo5Mzw==
+  useDB: false
+  mysqlUser: root
+points:
+  - address: 118.193.92.98
+    alias: SDZX_BJ_OVS
+    periodPacketNum: 100
+    perPacketIntervalMs: 1
+    perPacketIntervalUs: 0
+    periodNum: 1
+    periodMs: 0
