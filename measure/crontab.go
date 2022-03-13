@@ -220,6 +220,9 @@ func initDataType(typeOfData []string, typeOfDataOrm []string) {
 		case 14:
 			typeOfDataOrm[i] = "packet_loss"
 			typeOfData[i] = ".packet.loss"
+		case 15:
+			typeOfDataOrm[i] = "insert_nums"
+			typeOfData[i] = "insert.nums"
 		}
 	}
 }

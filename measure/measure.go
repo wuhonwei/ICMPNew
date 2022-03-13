@@ -3,12 +3,10 @@ package measure
 import (
 	"ICMPSimply/config"
 	"ICMPSimply/dataStore/dao"
-	"ICMPSimply/listening"
 	"ICMPSimply/mylog"
 	"ICMPSimply/protocol"
 	"ICMPSimply/state"
 	"ICMPSimply/statisticsAnalyse"
-	"encoding/json"
 	"fmt"
 	"math/rand"
 	"net"
@@ -18,6 +16,7 @@ import (
 )
 
 var logger = mylog.GetLogger()
+var TsFlag int64
 
 func Measure(conf *config.Config, confChan chan config.Config) {
 	message := make([]protocol.Message, len(conf.Points)) //用来保存每个节点的测量配置
@@ -31,6 +30,7 @@ func Measure(conf *config.Config, confChan chan config.Config) {
 	//	res[i] = -9
 	//}
 	curTime := time.Now().Unix()
+	TsFlag=curTime
 	// 顺序打乱 降低流量汇集概率，
 	/*zm
 	seed 只用于决定一个确定的随机序列。不管seed多大多小，只要随机序列一确定，本身就不会再重复。除非是样本空间太小。解决方案有两种：
@@ -178,7 +178,7 @@ func Measure(conf *config.Config, confChan chan config.Config) {
 				// 如果模式改变，需要改变监听方式 根据监听的端口是否被占用作为标准，即使模式切换仍能保证端口有能力回显数据
 				//logger.Debug("output result to terminal starting ...", zap.String("time", time.Since(startTest).String()))
 				//logger.Debug("output result to terminal starting ...", zap.String("time", time.Since(startTest).String()))
-				listening.ServerListen(conf)
+				//listening.ServerListen(conf)
 				// 打印到终端，openfalcon自己收集
 				//str := string(pushData)
 				//fmt.Println(str)
@@ -188,21 +188,23 @@ func Measure(conf *config.Config, confChan chan config.Config) {
 			//wg.Wait()
 		}
 	}
-	pushToDB(cells, conf)
-	//storeToFile.SavePerPacketToLocal(recv, conf, i) // 将得数据写入文件
-	for i, _ := range cells {
-		//返回子串str在字符串s中第一次出现的位置。
-		//如果找不到则返回-1；如果str为空，则返回0
-		index := strings.Index(cells[i].Tags, ",p_seq=")
-		cells[i].Tags = cells[i].Tags[:index]
-	}
-	pushData, err := json.Marshal(cells)
-	if err != nil {
-		//logger.Error("wrong in transfer to json", zap.Error(err))
-		//logger.Error("wrong in transfer to json", zap.Error(err))
-	}
-	fmt.Println(string(pushData))
-	cells = nil
+
+
+	pushToDB(cells, conf)//crontab输出到mysql数据库必须要带的代码，但是输出到夜莺tsdb不需要
+	////storeToFile.SavePerPacketToLocal(recv, conf, i) // 将得数据写入文件//夜莺插件输出到tsdb必须要带的代码，但是crontab可以不用
+	//for i, _ := range cells {//夜莺插件输出到tsdb必须要带的代码，但是crontab可以不用
+	//	//返回子串str在字符串s中第一次出现的位置。//夜莺插件输出到tsdb必须要带的代码，但是crontab可以不用
+	//	//如果找不到则返回-1；如果str为空，则返回0//夜莺插件输出到tsdb必须要带的代码，但是crontab可以不用
+	//	index := strings.Index(cells[i].Tags, ",p_seq=")//夜莺插件输出到tsdb必须要带的代码，但是crontab可以不用
+	//	cells[i].Tags = cells[i].Tags[:index]//夜莺插件输出到tsdb必须要带的代码，但是crontab可以不用
+	//}//夜莺插件输出到tsdb必须要带的代码，但是crontab可以不用
+	//pushData, err := json.Marshal(cells)//夜莺插件输出到tsdb必须要带的代码，但是crontab可以不用
+	//if err != nil {//夜莺插件输出到tsdb必须要带的代码，但是crontab可以不用
+	//	//logger.Error("wrong in transfer to json", zap.Error(err))//夜莺插件输出到tsdb必须要带的代码，但是crontab可以不用
+	//	//logger.Error("wrong in transfer to json", zap.Error(err))//夜莺插件输出到tsdb必须要带的代码，但是crontab可以不用
+	//}//夜莺插件输出到tsdb必须要带的代码，但是crontab可以不用
+	//fmt.Println(string(pushData))//夜莺插件输出到tsdb必须要带的代码，但是crontab可以不用
+	//cells = nil//夜莺插件输出到tsdb必须要带的代码，但是crontab可以不用
 }
 func deleteNull(cells []statisticsAnalyse.Cell) []statisticsAnalyse.Cell {
 	counter := 0
