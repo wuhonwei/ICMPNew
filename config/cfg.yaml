@@ -1,5 +1,5 @@
 address: 127.0.0.1
-alias: 192.168.0.86_club203_2
+alias: LOCAL_WIN10
 periodPacketNum: 50
 perPacketIntervalMs: 10
 perPacketIntervalUs: 0

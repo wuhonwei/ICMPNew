@@ -16,7 +16,7 @@ type Data struct {
 	PNum       string `gorm:"column:p_num"`
 	Step       string `gorm:"column:step"`
 	Protocol   string `gorm:"column:protocol"`
-	PacketSize string `gorm:"column:packet_size"`
+	PacketSize string `gorm:"column:packet_size" xorm:"unique(uniquename)"`
 	Value      string `gorm:"column:value"`
 	// packet_loss
 	// rtt_avg,rtt_min,rtt_max,rtt_var,rtt_quantile25,rtt_quantile50,rtt_quantile75

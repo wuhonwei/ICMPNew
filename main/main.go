@@ -27,6 +27,7 @@ var (
 	configurationFilename string
 	win10                 = runtime.GOOS == "windows"
 	logger                = mylog.GetLogger()
+	BJValues              = make([]string, 15)
 )
 
 func init() {
@@ -39,10 +40,10 @@ func init() {
 }
 
 func main() {
-
+	measure.Prepare = time.Now().UnixNano()
 	go state.CheckCPUAndMem()
 	go func() {
-		time.Sleep(600 * time.Second)
+		time.Sleep(590 * time.Second) //空出来10s
 		storeToFile.AppendFile("./RetryStatus.txt", "")
 		logger.Error("After running for more than 600 s, the program exits!!!!!!!!!!!!!!!!!,RetryTime: " + strconv.Itoa(dao.RetryTime))
 		os.Exit(1)

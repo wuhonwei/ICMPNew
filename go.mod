@@ -16,13 +16,13 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mattn/go-sqlite3 v1.14.0 // indirect
 	github.com/natefinch/lumberjack v2.0.0+incompatible
-	github.com/stretchr/testify v1.7.0 // indirect
+	github.com/pkg/sftp v1.13.4
 	github.com/syndtr/goleveldb v1.0.0 // indirect
 	github.com/tealeg/xlsx v1.0.5 // indirect
 	github.com/xormplus/builder v0.0.0-20200331055651-240ff40009be // indirect
 	github.com/xormplus/xorm v0.0.0-20210822100304-4e1d4fcc1e67
 	go.uber.org/zap v1.16.0
-	golang.org/x/sys v0.0.0-20201119102817-f84b799fce68 // indirect
+	golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/flosch/pongo2.v3 v3.0.0-20141028000813-5e81b817a0c4 // indirect
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7

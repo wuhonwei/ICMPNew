@@ -11,16 +11,16 @@ import (
 var logger = mylog.GetLogger()
 
 type Cell struct {
-	Endpoint    string  `json:"endpoint"`
-	SourceName  string  `json:"-"`
-	Metric      string  `json:"metric"`
-	Timestamp   int64   `json:"timestamp"`
-	Step        int64   `json:"step"`
-	Value       float64 `json:"value"`
-	CounterType string  `json:"-"`
-	Tags        string  `json:"tags"`
-	SourceIp    string  `json:"-"`
-	DestIp      string  `json:"-"`
+	Endpoint    string
+	SourceName  string
+	Metric      string
+	Timestamp   int64
+	Step        int64
+	Value       float64
+	CounterType string
+	Tags        string
+	SourceIp    string
+	DestIp      string
 }
 
 //每个包的记录信息

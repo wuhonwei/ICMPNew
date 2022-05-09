@@ -11,10 +11,10 @@ settings:
   useDB: false
   mysqlUser: root
 points:
-  - address: 118.193.92.98
-    alias: SDZX_BJ_OVS
-    periodPacketNum: 100
-    perPacketIntervalMs: 1
+  - address: 106.3.133.5
+    alias: SDZX_BJDB
+    periodPacketNum: 50
+    perPacketIntervalMs: 10
     perPacketIntervalUs: 0
     periodNum: 1
     periodMs: 0

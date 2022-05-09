@@ -17,10 +17,11 @@ import (
 
 var logger = mylog.GetLogger()
 var TsFlag int64
+var Prepare int64
 
 func Measure(conf *config.Config, confChan chan config.Config) {
-	message := make([]protocol.Message, len(conf.Points)) //用来保存每个节点的测量配置
-	cells := make([]statisticsAnalyse.Cell, 0)            //用来保护统计数据
+	message := make([]protocol.Message, len(conf.Points)+1) //用来保存每个节点的测量配置
+	cells := make([]statisticsAnalyse.Cell, 0)              //用来保护统计数据
 	//var timePushStart time.Time
 	var lock sync.Mutex
 	res := returnRes()
@@ -30,7 +31,7 @@ func Measure(conf *config.Config, confChan chan config.Config) {
 	//	res[i] = -9
 	//}
 	curTime := time.Now().Unix()
-	TsFlag=curTime
+	TsFlag = curTime
 	// 顺序打乱 降低流量汇集概率，
 	/*zm
 	seed 只用于决定一个确定的随机序列。不管seed多大多小，只要随机序列一确定，本身就不会再重复。除非是样本空间太小。解决方案有两种：
@@ -46,13 +47,18 @@ func Measure(conf *config.Config, confChan chan config.Config) {
 		lock.Lock()
 		// 洗牌算法，生成随机不重复的序列
 		perm := rand.Perm(len(conf.Points))
-		points := make([]config.Point, len(conf.Points)) //临时变量
+		points := make([]config.Point, len(conf.Points)+1) //临时变量
 		for i, p := range perm {
 			points[i] = conf.Points[p]
 		}
+		points[len(points)-1] = conf.Points[0]
+		points[len(points)-1].Alias = "BJ_DB"
+		points[len(points)-1].Address = strings.Split(conf.Data.MysqlAddress, ":")[0]
+		points[len(points)-1].Size = 1024
 		conf.Points = points //把顺序写回
 		lock.Unlock()
 	}
+	Prepare = time.Now().UnixNano() - Prepare
 	for i := 0; i < len(message); i++ {
 		//if conf.Data.IsContinuity {//目前它永远都是false
 		//	timePushStart = time.Now()
@@ -188,9 +194,7 @@ func Measure(conf *config.Config, confChan chan config.Config) {
 			//wg.Wait()
 		}
 	}
-
-
-	pushToDB(cells, conf)//crontab输出到mysql数据库必须要带的代码，但是输出到夜莺tsdb不需要
+	pushToDB(cells, conf) //crontab输出到mysql数据库必须要带的代码，但是输出到夜莺tsdb不需要
 	////storeToFile.SavePerPacketToLocal(recv, conf, i) // 将得数据写入文件//夜莺插件输出到tsdb必须要带的代码，但是crontab可以不用
 	//for i, _ := range cells {//夜莺插件输出到tsdb必须要带的代码，但是crontab可以不用
 	//	//返回子串str在字符串s中第一次出现的位置。//夜莺插件输出到tsdb必须要带的代码，但是crontab可以不用

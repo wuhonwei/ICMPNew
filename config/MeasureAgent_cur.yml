@@ -25,3 +25,10 @@ points:
     perPacketIntervalUs: 0
     periodNum: 1
     periodMs: 0
+  - address: 106.3.133.2
+    alias: SDZX_BJ
+    periodPacketNum: 50
+    perPacketIntervalMs: 10
+    perPacketIntervalUs: 0
+    periodNum: 1
+    periodMs: 0
