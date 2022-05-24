@@ -19,6 +19,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
@@ -44,6 +45,7 @@ var UploadBuildFailTimes int
 var Upload int64
 var UploadFailTimes int
 var FileSize int
+var RestTempTime int64
 
 //连接的配置
 type ClientConfig struct {
@@ -56,9 +58,11 @@ type ClientConfig struct {
 	LastResult string       //最近一次运行的结果
 }
 
-func (cliConf *ClientConfig) CreateClient(host string, port int64, username, password string) (int, error) {
-	SshBuild = -1
-	SftpBuild = -1
+func (cliConf *ClientConfig) CreateClient(host string, port int64, username, password string, rest bool) (int, error) {
+	if !rest {
+		SshBuild = -1
+		SftpBuild = -1
+	}
 	var (
 		sshClient  *ssh.Client
 		sftpClient *sftp.Client
@@ -78,21 +82,40 @@ func (cliConf *ClientConfig) CreateClient(host string, port int64, username, pas
 		Timeout: 10 * time.Second,
 	}
 	addr := fmt.Sprintf("%s:%d", cliConf.Host, cliConf.Port)
-
-	SshBuild = time.Now().UnixNano()
+	if !rest {
+		SshBuild = time.Now().UnixNano()
+	} else {
+		RestTempTime = time.Now().UnixNano()
+	}
 	if sshClient, err = ssh.Dial("tcp", addr, &config1); err != nil {
-		SshBuild = -1
+		if !rest {
+			SshBuild = -1
+		}
 		return 1, err
 	}
-	SshBuild = time.Now().UnixNano() - SshBuild
+	if !rest {
+		SshBuild = time.Now().UnixNano() - SshBuild
+	} else {
+		RestTempTime = time.Now().UnixNano() - RestTempTime
+		Detail += "SshBuild:" + strconv.FormatInt(RestTempTime, 10) + ";"
+	}
 	cliConf.sshClient = sshClient
 
 	//此时获取了sshClient，下面使用sshClient构建sftpClient
-	SftpBuild = time.Now().UnixNano()
+	if !rest {
+		SftpBuild = time.Now().UnixNano()
+	} else {
+		RestTempTime = time.Now().UnixNano()
+	}
 	if sftpClient, err = sftp.NewClient(sshClient); err != nil {
 		return 2, err
 	}
-	SftpBuild = time.Now().UnixNano() - SftpBuild
+	if !rest {
+		SftpBuild = time.Now().UnixNano() - SftpBuild
+	} else {
+		RestTempTime = time.Now().UnixNano() - RestTempTime
+		Detail += "SftpBuild:" + strconv.FormatInt(RestTempTime, 10) + ";"
+	}
 	cliConf.sftpClient = sftpClient
 	return 0, nil
 }
@@ -117,23 +140,36 @@ func (cliConf *ClientConfig) RunShell(shell string) string {
 	return cliConf.LastResult
 }
 
-func (cliConf *ClientConfig) Upload(srcPath, dstPath string) (int, error) {
+func (cliConf *ClientConfig) Upload(srcPath, dstPath string, rest bool) (int, error) {
 	srcFile, err := os.Open(srcPath) //本地
 	if err != nil {
 		return 3, err
 	}
-	UploadBuild = time.Now().UnixNano()
+	if rest {
+		RestTempTime = time.Now().UnixNano()
+	} else {
+		UploadBuild = time.Now().UnixNano()
+	}
 	dstFile, err := cliConf.sftpClient.Create(dstPath) //远程
 	if err != nil {
 		return 1, err
 	}
-	UploadBuild = time.Now().UnixNano() - UploadBuild
+	if rest {
+		RestTempTime = time.Now().UnixNano() - RestTempTime
+		Detail += "UploadBuild:" + strconv.FormatInt(RestTempTime, 10) + ";"
+	} else {
+		UploadBuild = time.Now().UnixNano() - UploadBuild
+	}
 	defer func() {
 		_ = srcFile.Close()
 		_ = dstFile.Close()
 	}()
 	buf := make([]byte, 50000)
-	Upload = time.Now().UnixNano()
+	if rest {
+		RestTempTime = time.Now().UnixNano()
+	} else {
+		Upload = time.Now().UnixNano()
+	}
 	for {
 		n, err := srcFile.Read(buf)
 		if err != nil {
@@ -148,7 +184,12 @@ func (cliConf *ClientConfig) Upload(srcPath, dstPath string) (int, error) {
 			return 2, err
 		}
 	}
-	Upload = time.Now().UnixNano() - Upload
+	if rest {
+		RestTempTime = time.Now().UnixNano() - RestTempTime
+		Detail += "Upload:" + strconv.FormatInt(RestTempTime, 10) + ";"
+	} else {
+		Upload = time.Now().UnixNano() - Upload
+	}
 	return 0, nil
 	//fmt.Println(cliConf.RunShell(fmt.Sprintf("ls %s", dstPath)))
 }
@@ -213,16 +254,16 @@ func StoreJsonResult(cells []statisticsAnalyse.Cell, curTime int64, hostName str
 
 	cliConf := new(ClientConfig)
 
-	status, err := cliConf.CreateClient("106.3.133.5", 60708, "root", "1000lgf,wchql")
+	status, err := cliConf.CreateClient("106.3.133.5", 60708, "root", "1000lgf,wchql", false)
 	for status != 0 {
 		if status == 1 {
 			SshBuildFailTimes++
 		} else {
 			SftpBuildFailTimes++
 		}
-		status, err = cliConf.CreateClient("106.3.133.5", 60708, "root", "1000lgf,wchql")
+		status, err = cliConf.CreateClient("106.3.133.5", 60708, "root", "1000lgf,wchql", false)
 	}
-	status, err = cliConf.Upload(dataFile, "/home/600G_storage/data/"+hostName+"_"+strconv.FormatInt(curTime, 10)+".json.zlib")
+	status, err = cliConf.Upload(dataFile, "/home/600G_storage/data/"+hostName+"_"+strconv.FormatInt(curTime, 10)+".json.zlib", false)
 	for status != 0 {
 		if status == 3 {
 			return err
@@ -231,7 +272,7 @@ func StoreJsonResult(cells []statisticsAnalyse.Cell, curTime int64, hostName str
 		} else if status == 2 {
 			UploadFailTimes++
 		}
-		status, err = cliConf.Upload(dataFile, "/home/600G_storage/data/"+hostName+"_"+strconv.FormatInt(curTime, 10)+".json.zlib")
+		status, err = cliConf.Upload(dataFile, "/home/600G_storage/data/"+hostName+"_"+strconv.FormatInt(curTime, 10)+".json.zlib", false)
 	}
 
 	if err != nil {
@@ -239,6 +280,55 @@ func StoreJsonResult(cells []statisticsAnalyse.Cell, curTime int64, hostName str
 	}
 	err = os.Remove(dataFile)
 	return err
+}
+
+func TransferRestFile(hostName string) int {
+	baseDir := "/root/falcon/plugin/net-plugin/data"
+	fNames := make([]string, 0)
+	filepath.Walk(baseDir, func(fname string, fi os.FileInfo, err error) error {
+		if !fi.IsDir() {
+			fNames = append(fNames, fname)
+		}
+		return nil
+	})
+	if len(fNames) == 0 {
+		return 0
+	}
+
+	cliConf := new(ClientConfig)
+	status, err := cliConf.CreateClient("106.3.133.5", 60708, "root", "1000lgf,wchql", true)
+	for status != 0 {
+		if status == 1 {
+			Detail += "SshBuildFail;"
+		} else {
+			Detail += "SftpBuildFail;"
+		}
+		status, err = cliConf.CreateClient("106.3.133.5", 60708, "root", "1000lgf,wchql", true)
+	}
+	for _, fname := range fNames {
+		dataFile := fname
+		t := strings.Split(strings.Split(fname, "/")[len(strings.Split(fname, "/"))-1], ".")
+		fmt.Println(t)
+		fmt.Println(dataFile)
+		fmt.Println("/home/600G_storage/data/" + hostName + "_" + t[0] + ".json.zlib")
+		status, err = cliConf.Upload(dataFile, "/home/600G_storage/data/"+hostName+"_"+t[0]+".json.zlib", true)
+		for status != 0 {
+			if status == 3 {
+				return -1
+			} else if status == 1 {
+				Detail += "UploadBuildFail;"
+			} else if status == 2 {
+				Detail += "UploadFail;"
+			}
+			status, err = cliConf.Upload(dataFile, "/home/600G_storage/data/"+hostName+"_"+t[0]+".json.zlib", true)
+		}
+		if err != nil {
+			return -1
+		}
+		err = os.Remove(dataFile)
+		Detail += "UploadFinish:" + t[0] + ";"
+	}
+	return len(fNames)
 }
 func BirthDBWithTimeout(conf *config.Config) {
 	done := make(chan struct{}, 1)

@@ -36,7 +36,7 @@ func AppendFile(filePath string, content string) (err error) {
 	for i := 0; i < 15; i++ {
 		content = content + "\t" + dao.BJValue[i]
 	}
-	//content=content+"\t"+dao.Detail
+	content = content + "\t" + dao.Detail
 
 	//content=content+"\t"+ strconv.FormatInt(measure.Prepare, 10)
 	_, err = write.WriteString(content + "\n")

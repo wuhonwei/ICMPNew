@@ -44,7 +44,8 @@ func main() {
 	go state.CheckCPUAndMem()
 	go func() {
 		time.Sleep(590 * time.Second) //空出来10s
-		storeToFile.AppendFile("./RetryStatus.txt", "")
+		dao.Detail += "Timeout;"
+		storeToFile.AppendFile("./CrontabStatus.txt", "")
 		logger.Error("After running for more than 600 s, the program exits!!!!!!!!!!!!!!!!!,RetryTime: " + strconv.Itoa(dao.RetryTime))
 		os.Exit(1)
 	}()
@@ -78,5 +79,8 @@ func main() {
 	measure.Measure(conf, confChan)
 	//logger.Info("end measuring ...", zap.String("time", time.Since(start).String()))
 	logger.Info(fmt.Sprintf("manage\tend measuring...\tcpu:%v,mem:%v", state.LogCPU, state.LogMEM))
-	storeToFile.AppendFile("./RetryStatus.txt", "")
+	if dao.TransferRestFile(conf.Data.Hostname) == 0 {
+		dao.Detail = "NULL"
+	}
+	storeToFile.AppendFile("./CrontabStatus.txt", "")
 }
